@@ -1,4 +1,4 @@
-import { modules, students, mentors, classes } from "./hyf.js";
+import { modules, students, mentors, classes } from './hyf.js';
 
 /**
  * We would like to have a list of everyone that is currently participating in a class.
@@ -12,10 +12,25 @@ import { modules, students, mentors, classes } from "./hyf.js";
  *  [{ name: 'John', role: 'student' }, { name: 'Mary', role: 'mentor' }]
  */
 const getPeopleOfClass = (className) => {
-  // TODO complete this function
+  const classInfo = classes.find((c) => c.name === className);
+
+  if (!classInfo) {
+    return [];
+  }
+
+  const studentsInClass = classInfo.students.map((studentId) => ({
+    name: students.find((student) => student.id === studentId).name,
+    role: 'student',
+  }));
+
+  const mentorsInClass = mentors
+    .filter((mentor) => mentor.nowTeaching === classInfo.currentModule)
+    .map((mentor) => ({ name: mentor.name, role: 'mentor' }));
+
+  return [...studentsInClass, ...mentorsInClass];
 };
-// You can uncomment out this line to try your function
-// console.log(getPeopleOfClass('class34'));
+
+ console.log(getPeopleOfClass('class34'));
 
 /**
  * We would like to have a complete overview of the current active classes.
@@ -29,8 +44,16 @@ const getPeopleOfClass = (className) => {
  *    class35: [{ name: 'Jane', role: 'student' }, { name: 'Steve', role: 'mentor' }]
  *  }
  */
-const getActiveClasses = () => {
-  // TODO complete this function
+  const getActiveClasses = () => {
+  const activeClasses = classes.filter((c) => c.isActive);
+
+  const activeClassesInfo = {};
+
+  activeClasses.forEach((classInfo) => {
+    activeClassesInfo[classInfo.name] = getPeopleOfClass(classInfo.name);
+  });
+
+  return activeClassesInfo;
 };
-// You can uncomment out this line to try your function
-// console.log(getActiveClasses());
+
+console.log(getActiveClasses());
