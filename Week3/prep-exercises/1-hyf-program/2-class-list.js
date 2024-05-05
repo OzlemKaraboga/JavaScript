@@ -11,26 +11,24 @@ import { modules, students, mentors, classes } from './hyf.js';
  *
  *  [{ name: 'John', role: 'student' }, { name: 'Mary', role: 'mentor' }]
  */
-const getPeopleOfClass = (className) => {
-  const classInfo = classes.find((c) => c.name === className);
 
-  if (!classInfo) {
-    return [];
+
+  const getPeopleOfClass = (className) => {
+  const targetClass = classes.find((c) => c.name === className);
+  if (!targetClass) {
+      return [];
   }
 
-  const studentsInClass = classInfo.students.map((studentId) => ({
-    name: students.find((student) => student.id === studentId).name,
-    role: 'student',
-  }));
+  const studentsInClass = students.filter((student) => student.class === className)
+                                  .map((student) => ({ name: student.name, role: 'student' }));
 
-  const mentorsInClass = mentors
-    .filter((mentor) => mentor.nowTeaching === classInfo.currentModule)
-    .map((mentor) => ({ name: mentor.name, role: 'mentor' }));
+  const mentorsInClass = mentors.filter((mentor) => mentor.nowTeaching === targetClass.currentModule)
+                                .map((mentor) => ({ name: mentor.name, role: 'mentor' }));
 
   return [...studentsInClass, ...mentorsInClass];
-};
-
- console.log(getPeopleOfClass('class34'));
+};    
+   
+  console.log(getPeopleOfClass('class34'));
 
 /**
  * We would like to have a complete overview of the current active classes.
@@ -44,16 +42,17 @@ const getPeopleOfClass = (className) => {
  *    class35: [{ name: 'Jane', role: 'student' }, { name: 'Steve', role: 'mentor' }]
  *  }
  */
-  const getActiveClasses = () => {
-  const activeClasses = classes.filter((c) => c.isActive);
 
+
+  const getActiveClasses = () => {
+  const activeClasses = classes.filter((c) => c.active);
   const activeClassesInfo = {};
 
-  activeClasses.forEach((classInfo) => {
-    activeClassesInfo[classInfo.name] = getPeopleOfClass(classInfo.name);
+  activeClasses.forEach((c) => {
+      activeClassesInfo[c.name] = getPeopleOfClass(c.name);
   });
 
   return activeClassesInfo;
 };
 
-console.log(getActiveClasses());
+  console.log(getActiveClasses());
